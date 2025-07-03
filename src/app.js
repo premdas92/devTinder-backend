@@ -3,10 +3,14 @@ const connectDB = require("./config/databse");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 const app = express();
 
-app.use(express.json()); // This is a middleware
+app.use(express.json()); // This is a middleware to read the data. We cant read the 'req' object
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   const { firstName, lastName, emailId, password, gender } = req.body;
@@ -42,12 +46,28 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid Credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password); // async task
+    const isPasswordValid = await user.validatePassword(password);
+    
     if (isPasswordValid) {
+      // Create a JWT Token
+      const token = await user.getJWT(); // whole token logic transferred to User schema object
+      // Add the token to the cookie and send it to the user
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
       res.send("Login successfull !");
     } else {
       throw new Error("Invalid Credentials");
     }
+  } catch (err) {
+    res.status(400).send("ERROR :" + err.message);
+  }
+});
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.loggedInUser;
+    res.status(200).send(loggedInUser);
   } catch (err) {
     res.status(400).send("ERROR :" + err.message);
   }
