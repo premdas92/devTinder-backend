@@ -8,12 +8,15 @@
     "dev": "nodemon src/app.js"
   },
   "keywords": [
-    "nodejs", 
+    "nodejs",
     "JavaScript"
   ],
   "author": "Prem",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.1",
+    "validator": "^13.15.15"
   }
 }
