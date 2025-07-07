@@ -19,7 +19,7 @@ const userSchema = new Schema(
     emailId: {
       type: String,
       required: true,
-      unique: true,
+      unique: true, // automatically creates an Index
       trim: true,
       lowercase: true,
       validate(value) {
@@ -44,13 +44,34 @@ const userSchema = new Schema(
     },
     gender: {
       type: String,
-      validate(value) {
+      enum: {
+        values: ["male", "female", "other"],
+        message: `{VALUE} is not a valid gender type`
+      }
+    /*  OR
+    validate(value) {
         // Validate method gets fired only in case of new creation and not is case of update(patch)
         if (!["male", "female", "others"].includes(value)) {
           throw new Error("Gender data is not valid");
         }
-      },
+      },*/
     },
+    photoUrl: {
+      type: String,
+      default: "https://geographyandyou.com/images/user-profile.png",
+      validate(value){
+        if(!validator.isURL(value)){
+          throw new Error("Invalid Photo URL: " + value)
+        }
+      }
+    },
+    about: {
+      type: String,
+      default: "This is a default about of the user !",
+    },
+    skills: {
+      type: ['String']
+    }
   },
   {
     timestamps: true, // gives createdAt and updatedAt

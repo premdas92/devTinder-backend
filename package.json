@@ -20,5 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.1",
     "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "eslint": "^9.30.1"
   }
 }
